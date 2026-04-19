@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   backButton: { marginBottom: Spacing.lg },
   backButtonText: { fontSize: FontSizes.subheadline, color: Colors.primary, fontWeight: '500' },
   section: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BORDER_RADIUS,
     padding: Spacing.lg,
     marginBottom: Spacing.md,

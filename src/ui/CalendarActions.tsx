@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   triggerButton: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.surfaceSubtle,
     borderRadius: BORDER_RADIUS,
     padding: Spacing.lg,
     flexDirection: 'row',
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   dropdown: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surfaceSubtle,
     borderRadius: BORDER_RADIUS,
     marginTop: Spacing.sm,
     padding: Spacing.sm,
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
     borderRadius: 8,
+    backgroundColor: Colors.surface,
   },
   optionEmoji: {
     fontSize: 20,

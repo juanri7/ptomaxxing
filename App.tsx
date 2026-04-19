@@ -450,11 +450,11 @@ const styles = StyleSheet.create({
   appSubtitle: { fontSize: FontSizes.subheadline, color: Colors.textSecondary, marginTop: Spacing.xs },
 
   // Cards
-  card: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS * 1.5, padding: Spacing.xl, marginBottom: Spacing.xl, ...CARD_SHADOW },
-  heroCard: { alignItems: 'center', borderWidth: 2, borderColor: Colors.primary },
-  resultHero: { ...HERO_SHADOW, alignItems: 'center', backgroundColor: Colors.primaryDark }, // Darker for contrast
-  summaryCard: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.xl, ...CARD_SHADOW },
-  breakCard: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.lg, borderLeftWidth: 6, ...CARD_SHADOW },
+  card: { backgroundColor: Colors.surface, borderRadius: BORDER_RADIUS * 1.5, padding: Spacing.xl, marginBottom: Spacing.xl, ...CARD_SHADOW },
+  heroCard: { alignItems: 'center', backgroundColor: Colors.surfaceSubtle, borderWidth: 2, borderColor: Colors.secondary }, // Secondary border for input container
+  resultHero: { ...HERO_SHADOW, alignItems: 'center', backgroundColor: Colors.holiday }, // Dark green for holiday cards (accessibility)
+  summaryCard: { backgroundColor: Colors.surface, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.xl, ...CARD_SHADOW },
+  breakCard: { backgroundColor: Colors.surface, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.lg, borderLeftWidth: 6, ...CARD_SHADOW },
 
   // Input
   inputLabel: { fontSize: FontSizes.title3, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.md, textAlign: 'center' },
@@ -525,16 +525,16 @@ const styles = StyleSheet.create({
   actionsSection: { marginTop: Spacing.lg, gap: Spacing.lg },
   primaryAction: { backgroundColor: Colors.primary, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', ...HERO_SHADOW },
   primaryActionText: { color: Colors.onPrimary, fontSize: FontSizes.title3, fontWeight: '900' },
-  secondaryAction: { backgroundColor: Colors.card, borderRadius: 20, padding: Spacing.lg, alignItems: 'center', borderWidth: 2, borderColor: Colors.background },
-  secondaryActionText: { fontSize: FontSizes.subheadline, fontWeight: '600' },
+  secondaryAction: { backgroundColor: Colors.surfaceSubtle, borderRadius: 20, padding: Spacing.lg, alignItems: 'center', borderWidth: 2, borderColor: Colors.background },
+  secondaryActionText: { fontSize: FontSizes.subheadline, fontWeight: '600', color: Colors.textPrimary },
 
   // Empty
-  emptyCard: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS, padding: Spacing.xl, alignItems: 'center' },
+  emptyCard: { backgroundColor: Colors.surface, borderRadius: BORDER_RADIUS, padding: Spacing.xl, alignItems: 'center' },
   emptyText: { fontSize: FontSizes.title2, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.md, textAlign: 'center' },
   emptyHint: { fontSize: FontSizes.footnote, color: Colors.textSecondary, textAlign: 'center' },
 
   // Modal
-  modalSafeArea: { flex: 1, backgroundColor: Colors.card },
+  modalSafeArea: { flex: 1, backgroundColor: Colors.surface },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: Spacing.xl },
   modalTitle: { fontSize: FontSizes.title2, fontWeight: '700', color: Colors.textPrimary },
   modalClose: { fontSize: FontSizes.body, color: Colors.primary, fontWeight: '600' },

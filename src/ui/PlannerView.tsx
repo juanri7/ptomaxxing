@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: Spacing.lg },
   section: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BORDER_RADIUS,
     padding: Spacing.lg,
     marginBottom: Spacing.md,

@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   toggleTextActive: { color: '#fff' },
   planTitle: { fontSize: FontSizes.title3, fontWeight: '700', marginBottom: Spacing.lg },
   planCard: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BORDER_RADIUS,
     padding: Spacing.lg,
     marginBottom: Spacing.lg,

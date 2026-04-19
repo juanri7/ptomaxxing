@@ -162,7 +162,7 @@ export default function CompanyHolidayInput({ holidays, onHolidaysChange }: Prop
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: BORDER_RADIUS,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   formTitle: { fontSize: FontSizes.subheadline, fontWeight: '600', marginBottom: Spacing.sm },
   input: {
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: 8,
     padding: Spacing.sm,
     marginBottom: Spacing.sm,
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   chipButtonText: { fontSize: FontSizes.footnote, fontWeight: '500' },
-  modal: { flex: 1, backgroundColor: Colors.card, padding: Spacing.lg },
+  modal: { flex: 1, backgroundColor: Colors.surface, padding: Spacing.lg },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

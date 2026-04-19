@@ -2,28 +2,43 @@
 // Inspired by Refero search of Duolingo + modern dashboards
 
 export const Colors = {
-  primary: '#44C29C',           // Duolingo green — energetic growth
-  primaryDark: '#2A9D7F',       // Darker green for better contrast on white text
-  secondary: '#4340BC',         // Duolingo purple — smart trust
-  accent: '#C32077',            // Duolingo pink — playful attention
-  background: '#F9FAFF',        // calm light grey-blue
-  card: '#FFFFFF',
-  pto: '#E4FAF5',               // light green tint
+  // Base hues
+  primaryHue: '#44C29C',        // Duolingo green — energetic growth
+  secondaryHue: '#4340BC',       // Duolingo purple — smart trust
+  accentHue: '#C32077',         // Duolingo pink — playful attention
+
+  // Semantic roles
+  primary: '#44C29C',           // Primary action (buttons, CTAs)
+  secondary: '#4340BC',         // Secondary action (links, chips)
+  accent: '#C32077',            // Accent (highlights, alerts)
+  
+  // Surfaces
+  background: '#F9FAFF',        // Page background
+  surface: '#FFFFFF',           // Card/surface background
+  surfaceSubtle: '#F2F4F8',     // Subtle surface (dropdowns, triggers)
+  
+  // Text
+  textPrimary: '#1B1C3B',       // Primary text (high contrast)
+  textSecondary: '#667583',     // Secondary text (labels, hints)
+  textHint: '#A5A7A7',          // Placeholder, disabled
+  
+  // On‑colored text (guaranteed contrast)
+  onPrimary: '#FFFFFF',
+  onSecondary: '#FFFFFF',
+  onAccent: '#FFFFFF',
+  
+  // Functional
+  destructive: '#FF375F',       // Error, destructive actions
+  success: '#44C29C',           // Success, positive
+  warning: '#FF9500',           // Warning, caution
+  
+  // Component‑specific
+  pto: '#E4FAF5',               // PTO chip background
   ptoBorder: '#44C29C',
-  holiday: '#2A9D7F',           // Use darker green for accessibility
+  holiday: '#2A9D7F',           // Holiday card background (accessible dark green)
   holidayText: '#FFFFFF',
   oooSpan: 'rgba(68, 194, 156, 0.1)',
   weekendBreak: 'rgba(67, 64, 188, 0.08)',
-  destructive: '#FF375F',
-  success: '#44C29C',
-  warning: '#FF9500',
-  textPrimary: '#1B1C3B',       // navy for high contrast
-  textSecondary: '#667583',     // subtle grey
-  textHint: '#A5A7A7',          // placeholder grey
-  surface: '#F2F4F8',           // light surface for cards/backgrounds
-  onPrimary: '#FFFFFF',         // Text on primary color (guaranteed contrast)
-  onSecondary: '#FFFFFF',       // Text on secondary
-  onAccent: '#FFFFFF',          // Text on accent
 };
 
 // Shortcuts for common usage
