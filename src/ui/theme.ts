@@ -3,13 +3,14 @@
 
 export const Colors = {
   primary: '#44C29C',           // Duolingo green — energetic growth
+  primaryDark: '#2A9D7F',       // Darker green for better contrast on white text
   secondary: '#4340BC',         // Duolingo purple — smart trust
   accent: '#C32077',            // Duolingo pink — playful attention
   background: '#F9FAFF',        // calm light grey-blue
   card: '#FFFFFF',
   pto: '#E4FAF5',               // light green tint
   ptoBorder: '#44C29C',
-  holiday: '#44C29C',
+  holiday: '#2A9D7F',           // Use darker green for accessibility
   holidayText: '#FFFFFF',
   oooSpan: 'rgba(68, 194, 156, 0.1)',
   weekendBreak: 'rgba(67, 64, 188, 0.08)',
@@ -19,6 +20,10 @@ export const Colors = {
   textPrimary: '#1B1C3B',       // navy for high contrast
   textSecondary: '#667583',     // subtle grey
   textHint: '#A5A7A7',          // placeholder grey
+  surface: '#F2F4F8',           // light surface for cards/backgrounds
+  onPrimary: '#FFFFFF',         // Text on primary color (guaranteed contrast)
+  onSecondary: '#FFFFFF',       // Text on secondary
+  onAccent: '#FFFFFF',          // Text on accent
 };
 
 // Shortcuts for common usage

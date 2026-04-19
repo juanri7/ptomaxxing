@@ -24,6 +24,7 @@ import { generateICS, copyPTODates } from './src/ics/icsGenerator';
 import { getCalendarLinks } from './src/utils/calendarLinks';
 import { todayStr, formatMonthDay, weekdayName } from './src/models/dateUtils';
 import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HERO_SHADOW } from './src/ui/theme';
+import CalendarActions from './src/ui/CalendarActions';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
 import * as SettingsStore from './src/storage/settingsStore';
 
@@ -38,6 +39,7 @@ export default function App() {
   const [plan, setPlan] = useState<PTOPlan | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [showHolidaySummary, setShowHolidaySummary] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState<'' | 'request' | 'dates'>('');
 
   const loadSettings = async () => {
     const saved = await SettingsStore.loadSettings();
@@ -91,7 +93,8 @@ export default function App() {
 
   const handleCopyRequest = useCallback(() => {
     Clipboard.setString(generateRequestText());
-    Alert.alert('Copied! ✅', 'Request text ready to paste.', [{ text: 'Nice' }]);
+    setCopyFeedback('request');
+    setTimeout(() => setCopyFeedback(''), 2000);
   }, [generateRequestText]);
 
   const handleShareICS = useCallback(async () => {
@@ -102,7 +105,8 @@ export default function App() {
   const handleCopyDates = useCallback(() => {
     if (!plan) return;
     Clipboard.setString(copyPTODates(plan));
-    Alert.alert('Dates copied! 📋', 'PTO dates pasted.', [{ text: 'OK' }]);
+    setCopyFeedback('dates');
+    setTimeout(() => setCopyFeedback(''), 2000);
   }, [plan]);
 
   const getHolidayWeekdaySummary = () => {
@@ -137,17 +141,29 @@ export default function App() {
           // ---------- INPUT VIEW ----------
           <>
             {/* Hero stepper */}
-            <View style={[styles.card, styles.heroCard]}>
+            <View style={[styles.card, styles.heroCard]} accessibilityLabel="PTO days selector" accessibilityRole="adjustable">
               <Text style={styles.inputLabel}>How many PTO days do you have?</Text>
               <View style={styles.stepperRow}>
-                <TouchableOpacity style={styles.stepperButton} onPress={() => setPtoDays(Math.max(1, ptoDays - 1))}>
+                <TouchableOpacity 
+                  style={styles.stepperButton} 
+                  onPress={() => setPtoDays(Math.max(1, ptoDays - 1))}
+                  accessibilityLabel="Decrease PTO days"
+                  accessibilityHint="Reduces PTO days count by one"
+                  accessibilityRole="button"
+                >
                   <Text style={styles.stepperButtonText}>−</Text>
                 </TouchableOpacity>
-                <View style={styles.stepperValueWrapper}>
+                <View style={styles.stepperValueWrapper} accessibilityLabel={`${ptoDays} PTO days selected`}>
                   <Text style={styles.stepperValue}>{ptoDays}</Text>
                   <Text style={styles.stepperLabel}>days</Text>
                 </View>
-                <TouchableOpacity style={styles.stepperButton} onPress={() => setPtoDays(Math.min(60, ptoDays + 1))}>
+                <TouchableOpacity 
+                  style={styles.stepperButton} 
+                  onPress={() => setPtoDays(Math.min(60, ptoDays + 1))}
+                  accessibilityLabel="Increase PTO days"
+                  accessibilityHint="Adds one PTO day to count"
+                  accessibilityRole="button"
+                >
                   <Text style={styles.stepperButtonText}>+</Text>
                 </TouchableOpacity>
               </View>
@@ -210,7 +226,7 @@ export default function App() {
             {plan ? (
               <>
                 {/* Hero stat */}
-                <View style={[styles.card, styles.resultHero]}>
+                <View style={[styles.card, styles.resultHero]} accessibilityLabel="Plan summary" accessibilityHint={`${plan.totalDaysOff} days off using ${plan.totalPtoUsed} PTO days`}>
                   <Text style={styles.heroNumber}>{plan.totalDaysOff}</Text>
                   <Text style={styles.heroLabel}>DAYS OFF</Text>
                   <View style={styles.heroSubRow}>
@@ -282,44 +298,32 @@ export default function App() {
 
                 {/* Actions */}
                 <View style={styles.actionsSection}>
-                  <TouchableOpacity style={styles.primaryAction} onPress={handleCopyRequest}>
-                    <Text style={styles.primaryActionText}>📋 Copy Request Text</Text>
+                  <TouchableOpacity 
+                    style={styles.primaryAction} 
+                    onPress={handleCopyRequest}
+                    accessibilityLabel="Copy request text"
+                    accessibilityHint="Copies formatted message to send to your manager"
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.primaryActionText}>
+                      {copyFeedback === 'request' ? '✅ Copied!' : '📋 Copy Request Text'}
+                    </Text>
                   </TouchableOpacity>
 
-                  <Text style={styles.calendarTitle}>📅 Add to your calendar</Text>
-                  <View style={styles.calendarRow}>
-                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
-                      if (!plan) return;
-                      const links = getCalendarLinks(plan);
-                      Linking.openURL(links.google).catch(() => {})
-                    }}>
-                      <Text style={styles.calendarProviderBtnText}>Google</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
-                      if (!plan) return;
-                      const links = getCalendarLinks(plan);
-                      Linking.openURL(links.outlook).catch(() => {})
-                    }}>
-                      <Text style={styles.calendarProviderBtnText}>Outlook</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
-                      if (!plan) return;
-                      const links = getCalendarLinks(plan);
-                      // Apple Calendar via ICS file download (Share sheet)
-                      Share.share({ message: links.ics, title: 'PTO Maxxing Calendar' });
-                    }}>
-                      <Text style={styles.calendarProviderBtnText}>Apple/ICS</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {/* Calendar dropdown */}
+                  <CalendarActions plan={plan} />
 
-                  <View style={styles.secondaryActions}>
-                    <TouchableOpacity style={styles.secondaryAction} onPress={handleShareICS}>
-                      <Text style={styles.secondaryActionText}>📥 ICS File</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.secondaryAction} onPress={handleCopyDates}>
-                      <Text style={styles.secondaryActionText}>📋 Dates Only</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity 
+                    style={styles.secondaryAction} 
+                    onPress={handleCopyDates}
+                    accessibilityLabel="Copy dates only"
+                    accessibilityHint="Copies just the PTO dates without holiday names"
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.secondaryActionText}>
+                      {copyFeedback === 'dates' ? '✅ Dates copied!' : '📋 Copy Dates Only'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </>
             ) : (
@@ -437,7 +441,7 @@ const styles = StyleSheet.create({
   // Cards
   card: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS * 1.5, padding: Spacing.xl, marginBottom: Spacing.xl, ...CARD_SHADOW },
   heroCard: { alignItems: 'center', borderWidth: 2, borderColor: Colors.primary },
-  resultHero: { ...HERO_SHADOW, alignItems: 'center', backgroundColor: Colors.primary },
+  resultHero: { ...HERO_SHADOW, alignItems: 'center', backgroundColor: Colors.primaryDark }, // Darker for contrast
   summaryCard: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.xl, ...CARD_SHADOW },
   breakCard: { backgroundColor: Colors.card, borderRadius: BORDER_RADIUS, padding: Spacing.lg, marginBottom: Spacing.lg, borderLeftWidth: 6, ...CARD_SHADOW },
 
@@ -509,13 +513,8 @@ const styles = StyleSheet.create({
   // Actions
   actionsSection: { marginTop: Spacing.lg, gap: Spacing.lg },
   primaryAction: { backgroundColor: Colors.primary, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', ...HERO_SHADOW },
-  primaryActionText: { color: '#FFFFFF', fontSize: FontSizes.title3, fontWeight: '900' },
-  calendarTitle: { fontSize: FontSizes.subheadline, color: Colors.textSecondary, fontWeight: '600', textAlign: 'center', marginTop: -Spacing.sm },
-  calendarRow: { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', flexWrap: 'wrap' },
-  calendarProviderBtn: { backgroundColor: Colors.card, borderRadius: 16, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, borderWidth: 2, borderColor: Colors.background, minWidth: 90 },
-  calendarProviderBtnText: { fontSize: FontSizes.footnote, fontWeight: '600', textAlign: 'center', color: Colors.textPrimary },
-  secondaryActions: { flexDirection: 'row', gap: Spacing.md },
-  secondaryAction: { flex: 1, backgroundColor: Colors.card, borderRadius: 20, padding: Spacing.lg, alignItems: 'center', borderWidth: 2, borderColor: Colors.background },
+  primaryActionText: { color: Colors.onPrimary, fontSize: FontSizes.title3, fontWeight: '900' },
+  secondaryAction: { backgroundColor: Colors.card, borderRadius: 20, padding: Spacing.lg, alignItems: 'center', borderWidth: 2, borderColor: Colors.background },
   secondaryActionText: { fontSize: FontSizes.subheadline, fontWeight: '600' },
 
   // Empty
