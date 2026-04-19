@@ -25,6 +25,7 @@ import { getCalendarLinks } from './src/utils/calendarLinks';
 import { todayStr, formatMonthDay, weekdayName } from './src/models/dateUtils';
 import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HERO_SHADOW } from './src/ui/theme';
 import CalendarActions from './src/ui/CalendarActions';
+import Confetti from './src/ui/Confetti';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
 import * as SettingsStore from './src/storage/settingsStore';
 
@@ -40,6 +41,7 @@ export default function App() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [showHolidaySummary, setShowHolidaySummary] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<'' | 'request' | 'dates'>('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const loadSettings = async () => {
     const saved = await SettingsStore.loadSettings();
@@ -75,6 +77,12 @@ export default function App() {
     setPlan(generated.length > 0 ? generated[0] : null);
     setIsCalculating(false);
     setViewMode('results');
+    
+    // Trigger confetti celebration
+    if (generated.length > 0) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000); // Auto‑hide after 2s
+    }
   }, [ptoDays, companyHolidays, isCalculating]);
 
   const generateRequestText = useCallback(() => {
@@ -335,6 +343,9 @@ export default function App() {
           </>
         )}
       </ScrollView>
+
+      {/* Confetti celebration */}
+      <Confetti active={showConfetti} />
 
       {/* Company holidays modal */}
       <Modal visible={showCompanyModal} animationType="slide" presentationStyle="pageSheet">
