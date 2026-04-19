@@ -16,6 +16,7 @@ import {
   TextInput,
   Modal,
   Linking,
+  Animated,
 } from 'react-native';
 import { PlannerSettings, PTOPlan, DEFAULT_SETTINGS, CompanyHoliday } from './src/models/types';
 import { generatePlans } from './src/engine/solver';
@@ -26,6 +27,7 @@ import { todayStr, formatMonthDay, weekdayName } from './src/models/dateUtils';
 import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HERO_SHADOW } from './src/ui/theme';
 import CalendarActions from './src/ui/CalendarActions';
 import Confetti from './src/ui/Confetti';
+import { SkeletonCard, SkeletonHero } from './src/ui/Skeleton';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
 import * as SettingsStore from './src/storage/settingsStore';
 
@@ -42,6 +44,8 @@ export default function App() {
   const [showHolidaySummary, setShowHolidaySummary] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<'' | 'request' | 'dates'>('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(1)); // For transitions
+  const [pulseAnim] = useState(new Animated.Value(1)); // For loading pulse
 
   const loadSettings = async () => {
     const saved = await SettingsStore.loadSettings();
@@ -55,6 +59,32 @@ export default function App() {
   };
 
   useEffect(() => { loadSettings(); }, []);
+
+  // Pulse animation for loading text
+  useEffect(() => {
+    if (isCalculating) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.7,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.stopAnimation();
+      pulseAnim.setValue(1);
+    }
+    return () => {
+      pulseAnim.stopAnimation();
+    };
+  }, [isCalculating, pulseAnim]);
 
   const calculatePlan = useCallback(() => {
     if (isCalculating) return;
@@ -76,6 +106,21 @@ export default function App() {
     const generated = generatePlans(holidays, settings);
     setPlan(generated.length > 0 ? generated[0] : null);
     setIsCalculating(false);
+    
+    // Fade transition to results
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    
     setViewMode('results');
     
     // Trigger confetti celebration
@@ -138,7 +183,8 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.appTitle}>PTO Maxxing ⚡</Text>
@@ -217,9 +263,15 @@ export default function App() {
               onPress={calculatePlan}
               disabled={isCalculating}
             >
-              <Text style={styles.ctaButtonText}>
-                {isCalculating ? 'Optimizing… ✨' : '🔥 Show My Optimized Plan'}
-              </Text>
+              {isCalculating ? (
+                <Animated.Text style={[styles.ctaButtonText, { opacity: pulseAnim }]}>
+                  Optimizing… ✨
+                </Animated.Text>
+              ) : (
+                <Text style={styles.ctaButtonText}>
+                  🔥 Show My Optimized Plan
+                </Text>
+              )}
             </TouchableOpacity>
 
             <Text style={styles.footerText}>📅 US Federal Holidays 2025‑2029 · Strategy: Maximum Efficiency</Text>
@@ -231,7 +283,15 @@ export default function App() {
               <Text style={styles.backButtonText}>← Start Over</Text>
             </TouchableOpacity>
 
-            {plan ? (
+            {isCalculating ? (
+              // Loading skeletons
+              <>
+                <SkeletonHero />
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            ) : plan ? (
               <>
                 {/* Hero stat */}
                 <View style={[styles.card, styles.resultHero]} accessibilityLabel="Plan summary" accessibilityHint={`${plan.totalDaysOff} days off using ${plan.totalPtoUsed} PTO days`}>
@@ -334,15 +394,16 @@ export default function App() {
                   </TouchableOpacity>
                 </View>
               </>
-            ) : (
+            ) : !plan ? (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyText}>💡 No plans found.</Text>
                 <Text style={styles.emptyHint}>Try increasing PTO days or adding company holidays.</Text>
               </View>
-            )}
+            ) : null}
           </>
         )}
-      </ScrollView>
+        </ScrollView>
+      </Animated.View>
 
       {/* Confetti celebration */}
       <Confetti active={showConfetti} />
