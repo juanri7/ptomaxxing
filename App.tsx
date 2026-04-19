@@ -15,11 +15,13 @@ import {
   Clipboard,
   TextInput,
   Modal,
+  Linking,
 } from 'react-native';
 import { PlannerSettings, PTOPlan, DEFAULT_SETTINGS, CompanyHoliday } from './src/models/types';
 import { generatePlans } from './src/engine/solver';
 import { loadHolidays } from './src/data/holidaysData';
 import { generateICS, copyPTODates } from './src/ics/icsGenerator';
+import { getCalendarLinks } from './src/utils/calendarLinks';
 import { todayStr, formatMonthDay, weekdayName } from './src/models/dateUtils';
 import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HERO_SHADOW } from './src/ui/theme';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
@@ -283,12 +285,39 @@ export default function App() {
                   <TouchableOpacity style={styles.primaryAction} onPress={handleCopyRequest}>
                     <Text style={styles.primaryActionText}>📋 Copy Request Text</Text>
                   </TouchableOpacity>
+
+                  <Text style={styles.calendarTitle}>📅 Add to your calendar</Text>
+                  <View style={styles.calendarRow}>
+                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
+                      if (!plan) return;
+                      const links = getCalendarLinks(plan);
+                      Linking.openURL(links.google).catch(() => {})
+                    }}>
+                      <Text style={styles.calendarProviderBtnText}>Google</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
+                      if (!plan) return;
+                      const links = getCalendarLinks(plan);
+                      Linking.openURL(links.outlook).catch(() => {})
+                    }}>
+                      <Text style={styles.calendarProviderBtnText}>Outlook</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.calendarProviderBtn} onPress={() => {
+                      if (!plan) return;
+                      const links = getCalendarLinks(plan);
+                      // Apple Calendar via ICS file download (Share sheet)
+                      Share.share({ message: links.ics, title: 'PTO Maxxing Calendar' });
+                    }}>
+                      <Text style={styles.calendarProviderBtnText}>Apple/ICS</Text>
+                    </TouchableOpacity>
+                  </View>
+
                   <View style={styles.secondaryActions}>
                     <TouchableOpacity style={styles.secondaryAction} onPress={handleShareICS}>
-                      <Text style={styles.secondaryActionText}>📅 Add to Calendar</Text>
+                      <Text style={styles.secondaryActionText}>📥 ICS File</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.secondaryAction} onPress={handleCopyDates}>
-                      <Text style={styles.secondaryActionText}>📋 Copy Dates</Text>
+                      <Text style={styles.secondaryActionText}>📋 Dates Only</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -481,6 +510,10 @@ const styles = StyleSheet.create({
   actionsSection: { marginTop: Spacing.lg, gap: Spacing.lg },
   primaryAction: { backgroundColor: Colors.primary, borderRadius: 24, padding: Spacing.lg, alignItems: 'center', ...HERO_SHADOW },
   primaryActionText: { color: '#FFFFFF', fontSize: FontSizes.title3, fontWeight: '900' },
+  calendarTitle: { fontSize: FontSizes.subheadline, color: Colors.textSecondary, fontWeight: '600', textAlign: 'center', marginTop: -Spacing.sm },
+  calendarRow: { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'center', flexWrap: 'wrap' },
+  calendarProviderBtn: { backgroundColor: Colors.card, borderRadius: 16, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, borderWidth: 2, borderColor: Colors.background, minWidth: 90 },
+  calendarProviderBtnText: { fontSize: FontSizes.footnote, fontWeight: '600', textAlign: 'center', color: Colors.textPrimary },
   secondaryActions: { flexDirection: 'row', gap: Spacing.md },
   secondaryAction: { flex: 1, backgroundColor: Colors.card, borderRadius: 20, padding: Spacing.lg, alignItems: 'center', borderWidth: 2, borderColor: Colors.background },
   secondaryActionText: { fontSize: FontSizes.subheadline, fontWeight: '600' },
