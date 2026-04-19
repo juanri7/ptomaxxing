@@ -71,6 +71,12 @@ export function todayStr(): string {
   return formatDate(new Date());
 }
 
+/** Get short weekday name (Mon, Tue, etc.) */
+export function weekdayName(dateStr: string): string {
+  const d = parseDate(dateStr);
+  return d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+}
+
 /** Generate all dates between two strings inclusive */
 export function dateRange(startStr: string, endStr: string): string[] {
   const dates: string[] = [];
