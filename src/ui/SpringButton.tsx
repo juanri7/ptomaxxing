@@ -12,15 +12,21 @@ interface SpringButtonProps {
   disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityRole?: 'button' | 'link' | 'search' | 'image' | 'keyboardkey' | 'text' | 'adjustable' | 'imagebutton' | 'header' | 'summary' | 'alert' | 'checkbox' | 'combobox' | 'menu' | 'menubar' | 'menuitem' | 'progressbar' | 'radio' | 'radiogroup' | 'scrollbar' | 'spinbutton' | 'switch' | 'tab' | 'tablist' | 'timer' | 'toolbar';
 }
 
-export default function SpringButton({ 
-  title, 
-  onPress, 
-  primary = true, 
+export default function SpringButton({
+  title,
+  onPress,
+  primary = true,
   disabled = false,
   style,
-  textStyle 
+  textStyle,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole,
 }: SpringButtonProps) {
   const scale = useRef(new Animated.Value(1)).current;
   
@@ -66,6 +72,9 @@ export default function SpringButton({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityRole={accessibilityRole || 'button'}
     >
       <Animated.View style={[{ transform: [{ scale }] }, buttonStyle, style]}>
         <Text style={[defaultTextStyle, textStyle]}>{title}</Text>

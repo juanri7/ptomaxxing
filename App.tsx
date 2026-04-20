@@ -31,6 +31,7 @@ import CalendarActions from './src/ui/CalendarActions';
 import Confetti from './src/ui/Confetti';
 import { SkeletonCard, SkeletonHero } from './src/ui/Skeleton';
 import SpringCard from './src/ui/SpringCard';
+import SpringButton from './src/ui/SpringButton';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
 import * as SettingsStore from './src/storage/settingsStore';
 
@@ -308,37 +309,37 @@ export default function App() {
                 )}
               </View>
             ) : (
-              <TouchableOpacity style={styles.card} onPress={() => setShowCompanyBlock(true)}>
+              <SpringCard onPress={() => setShowCompanyBlock(true)} style={styles.card}>
                 <Text style={styles.addHolidayTitle}>➕ Add company holidays</Text>
                 <Text style={styles.addHolidayHint}>Optional – days your company already gives you off</Text>
-              </TouchableOpacity>
+              </SpringCard>
             )}
 
             {/* CTA */}
-            <TouchableOpacity
-              style={[styles.ctaButton, isCalculating && styles.ctaButtonDisabled]}
+            <SpringButton
+              title={isCalculating ? 'Optimizing… ✨' : '🔥 Show My Optimized Plan'}
               onPress={calculatePlan}
+              primary={true}
               disabled={isCalculating}
-            >
-              {isCalculating ? (
-                <Animated.Text style={[styles.ctaButtonText, { opacity: pulseAnim }]}>
-                  Optimizing… ✨
-                </Animated.Text>
-              ) : (
-                <Text style={styles.ctaButtonText}>
-                  🔥 Show My Optimized Plan
-                </Text>
-              )}
-            </TouchableOpacity>
+              style={[
+                styles.ctaButton,
+                isCalculating && styles.ctaButtonDisabled,
+              ].filter(Boolean) as any}
+              textStyle={styles.ctaButtonText}
+            />
 
             <Text style={styles.footerText}>📅 US Federal Holidays 2025‑2029 · Strategy: Maximum Efficiency</Text>
           </>
         ) : (
           // ---------- RESULTS VIEW ----------
           <>
-            <TouchableOpacity style={styles.backButton} onPress={() => setViewMode('input')}>
-              <Text style={styles.backButtonText}>← Start Over</Text>
-            </TouchableOpacity>
+            <SpringButton
+              title="← Start Over"
+              onPress={() => setViewMode('input')}
+              primary={false}
+              style={styles.backButton}
+              textStyle={styles.backButtonText}
+            />
 
             {isCalculating ? (
               // Loading skeletons
@@ -364,10 +365,9 @@ export default function App() {
                 </View>
 
                 {/* Holiday weekday summary */}
-                <TouchableOpacity
+                <SpringCard
                   style={styles.summaryCard}
                   onPress={() => setShowHolidaySummary(!showHolidaySummary)}
-                  activeOpacity={0.7}
                 >
                   <View style={styles.rowBetween}>
                     <Text style={styles.summaryTitle}>📅 Holiday Weekday Summary</Text>
@@ -387,7 +387,7 @@ export default function App() {
                       }
                     </View>
                   )}
-                </TouchableOpacity>
+                </SpringCard>
 
                 {/* Break cards */}
                 {plan.breaks.map((brk, i) => {
@@ -428,32 +428,24 @@ export default function App() {
 
                 {/* Actions */}
                 <View style={styles.actionsSection}>
-                  <TouchableOpacity 
-                    style={styles.primaryAction} 
+                  <SpringButton
+                    title={copyFeedback === 'request' ? '✅ Copied!' : '📋 Copy Request Text'}
                     onPress={handleCopyRequest}
+                    primary={true}
                     accessibilityLabel="Copy request text"
                     accessibilityHint="Copies formatted message to send to your manager"
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.primaryActionText}>
-                      {copyFeedback === 'request' ? '✅ Copied!' : '📋 Copy Request Text'}
-                    </Text>
-                  </TouchableOpacity>
+                  />
 
                   {/* Calendar dropdown */}
                   <CalendarActions plan={plan} />
 
-                  <TouchableOpacity 
-                    style={styles.secondaryAction} 
+                  <SpringButton
+                    title={copyFeedback === 'dates' ? '✅ Dates copied!' : '📋 Copy Dates Only'}
                     onPress={handleCopyDates}
+                    primary={false}
                     accessibilityLabel="Copy dates only"
                     accessibilityHint="Copies just the PTO dates without holiday names"
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.secondaryActionText}>
-                      {copyFeedback === 'dates' ? '✅ Dates copied!' : '📋 Copy Dates Only'}
-                    </Text>
-                  </TouchableOpacity>
+                  />
                 </View>
               </>
             ) : !plan ? (
