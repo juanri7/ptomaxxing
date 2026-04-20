@@ -28,8 +28,9 @@ import { getCalendarLinks } from './src/utils/calendarLinks';
 import { todayStr, formatMonthDay, weekdayName } from './src/models/dateUtils';
 import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HERO_SHADOW } from './src/ui/theme';
 import CalendarActions from './src/ui/CalendarActions';
-import Confetti from './src/ui/Confetti';
+import ConfettiV2 from './src/ui/ConfettiV2';
 import { SkeletonCard, SkeletonHero } from './src/ui/Skeleton';
+import SuccessCheckmark from './src/ui/SuccessCheckmark';
 import SpringCard from './src/ui/SpringCard';
 import SpringButton from './src/ui/SpringButton';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
@@ -48,6 +49,7 @@ export default function App() {
   const [showHolidaySummary, setShowHolidaySummary] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState<'' | 'request' | 'dates'>('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(1)); // For transitions
   const [pulseAnim] = useState(new Animated.Value(1)); // For loading pulse
   const [heroScale] = useState(new Animated.Value(1)); // For hero number spring
@@ -166,7 +168,11 @@ export default function App() {
   const handleCopyRequest = useCallback(() => {
     Clipboard.setString(generateRequestText());
     setCopyFeedback('request');
-    setTimeout(() => setCopyFeedback(''), 2000);
+    setShowCopySuccess(true);
+    setTimeout(() => {
+      setCopyFeedback('');
+      setShowCopySuccess(false);
+    }, 2000);
   }, [generateRequestText]);
 
   const handleShareICS = useCallback(async () => {
@@ -178,7 +184,11 @@ export default function App() {
     if (!plan) return;
     Clipboard.setString(copyPTODates(plan));
     setCopyFeedback('dates');
-    setTimeout(() => setCopyFeedback(''), 2000);
+    setShowCopySuccess(true);
+    setTimeout(() => {
+      setCopyFeedback('');
+      setShowCopySuccess(false);
+    }, 2000);
   }, [plan]);
 
   const getHolidayWeekdaySummary = () => {
@@ -459,8 +469,11 @@ export default function App() {
         </ScrollView>
       </Animated.View>
 
-      {/* Confetti celebration */}
-      <Confetti active={showConfetti} />
+      {/* Enhanced confetti celebration */}
+      <ConfettiV2 active={showConfetti} duration={2500} />
+      
+      {/* Success checkmark for copy actions */}
+      <SuccessCheckmark active={showCopySuccess} size={70} />
 
       {/* Company holidays modal */}
       <Modal visible={showCompanyModal} animationType="slide" presentationStyle="pageSheet">
