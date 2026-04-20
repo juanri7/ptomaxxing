@@ -30,6 +30,7 @@ import { Colors, TextColors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW, HER
 import CalendarActions from './src/ui/CalendarActions';
 import Confetti from './src/ui/Confetti';
 import { SkeletonCard, SkeletonHero } from './src/ui/Skeleton';
+import SpringCard from './src/ui/SpringCard';
 import { parseHolidayText } from './src/parsing/holidayTextParser';
 import * as SettingsStore from './src/storage/settingsStore';
 
@@ -48,6 +49,7 @@ export default function App() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(1)); // For transitions
   const [pulseAnim] = useState(new Animated.Value(1)); // For loading pulse
+  const [heroScale] = useState(new Animated.Value(1)); // For hero number spring
 
   const loadSettings = async () => {
     const saved = await SettingsStore.loadSettings();
@@ -219,7 +221,24 @@ export default function App() {
               <View style={styles.stepperRow}>
                 <TouchableOpacity 
                   style={styles.stepperButton} 
-                  onPress={() => setPtoDays(Math.max(1, ptoDays - 1))}
+                  onPress={() => {
+                    // Spring animation for hero number
+                    Animated.sequence([
+                      Animated.spring(heroScale, {
+                        toValue: 1.1,
+                        friction: 3,
+                        tension: 40,
+                        useNativeDriver: true,
+                      }),
+                      Animated.spring(heroScale, {
+                        toValue: 1,
+                        friction: 3,
+                        tension: 40,
+                        useNativeDriver: true,
+                      }),
+                    ]).start();
+                    setPtoDays(Math.max(1, ptoDays - 1));
+                  }}
                   accessibilityLabel="Decrease PTO days"
                   accessibilityHint="Reduces PTO days count by one"
                   accessibilityRole="button"
@@ -227,12 +246,31 @@ export default function App() {
                   <Text style={styles.stepperButtonText}>−</Text>
                 </TouchableOpacity>
                 <View style={styles.stepperValueWrapper} accessibilityLabel={`${ptoDays} PTO days selected`}>
-                  <Text style={styles.stepperValue}>{ptoDays}</Text>
+                  <Animated.Text style={[styles.stepperValue, { transform: [{ scale: heroScale }] }]}>
+                    {ptoDays}
+                  </Animated.Text>
                   <Text style={styles.stepperLabel}>days</Text>
                 </View>
                 <TouchableOpacity 
                   style={styles.stepperButton} 
-                  onPress={() => setPtoDays(Math.min(60, ptoDays + 1))}
+                  onPress={() => {
+                    // Spring animation for hero number
+                    Animated.sequence([
+                      Animated.spring(heroScale, {
+                        toValue: 1.1,
+                        friction: 3,
+                        tension: 40,
+                        useNativeDriver: true,
+                      }),
+                      Animated.spring(heroScale, {
+                        toValue: 1,
+                        friction: 3,
+                        tension: 40,
+                        useNativeDriver: true,
+                      }),
+                    ]).start();
+                    setPtoDays(Math.min(60, ptoDays + 1));
+                  }}
                   accessibilityLabel="Increase PTO days"
                   accessibilityHint="Adds one PTO day to count"
                   accessibilityRole="button"
@@ -358,13 +396,17 @@ export default function App() {
                   const borderColor = brk.totalDaysOff >= 7 ? '#44C29C' : brk.totalDaysOff >= 4 ? '#4340BC' : '#C32077';
                   const emoji = brk.totalDaysOff >= 7 ? '🔵' : brk.totalDaysOff >= 4 ? '🟢' : '🟡';
                   return (
-                    <View key={`break-${i}`} style={[styles.breakCard, { borderLeftColor: borderColor }]}>
-                      <View style={styles.breakHeader}>
-                        <Text style={styles.breakEmoji}>{emoji}</Text>
-                        <View style={styles.breakTitleArea}>
-                          <Text style={styles.breakTitle}>{holidayNames}</Text>
-                          <Text style={styles.breakWeekday}>({holidayWeekdays})</Text>
-                        </View>
+                    <SpringCard key={`break-${i}`} onPress={() => {
+                      // Optional: Copy dates for this specific break
+                      // Could be enhanced to show break details
+                    }}>
+                      <View style={[styles.breakCard, { borderLeftColor: borderColor }]}>
+                        <View style={styles.breakHeader}>
+                          <Text style={styles.breakEmoji}>{emoji}</Text>
+                          <View style={styles.breakTitleArea}>
+                            <Text style={styles.breakTitle}>{holidayNames}</Text>
+                            <Text style={styles.breakWeekday}>({holidayWeekdays})</Text>
+                          </View>
                       </View>
                       <Text style={styles.breakAction}>
                         Take {brk.ptoDays.length} day{brk.ptoDays.length !== 1 ? 's' : ''} off → {brk.totalDaysOff} day{brk.totalDaysOff !== 1 ? 's' : ''} off
@@ -379,7 +421,8 @@ export default function App() {
                           </View>
                         ))}
                       </View>
-                    </View>
+                      </View>
+                    </SpringCard>
                   );
                 })}
 
