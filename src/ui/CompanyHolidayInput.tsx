@@ -10,6 +10,10 @@ import {
   Modal,
   ScrollView,
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { CompanyHoliday, ParsedHoliday } from '../models/types';
 import { Colors, Spacing, FontSizes, BORDER_RADIUS, CARD_SHADOW } from './theme';
@@ -116,7 +120,11 @@ export default function CompanyHolidayInput({ holidays, onHolidaysChange }: Prop
 
       {/* Import Modal */}
       <Modal visible={showImportModal} animationType="slide" presentationStyle="pageSheet">
-        <View style={styles.modal}>
+        <KeyboardAvoidingView 
+          style={styles.modal} 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Import Company Holidays</Text>
             <TouchableOpacity onPress={() => { setShowImportModal(false); setDetectedHolidays([]); }}>
@@ -154,7 +162,7 @@ export default function CompanyHolidayInput({ holidays, onHolidaysChange }: Prop
               </TouchableOpacity>
             </View>
           )}
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

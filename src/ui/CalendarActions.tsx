@@ -109,8 +109,9 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.lg, // Increased for touch target
+    paddingHorizontal: Spacing.md,
+    minHeight: 48, // WCAG minimum touch target
     borderRadius: 8,
     backgroundColor: Colors.surface,
   },

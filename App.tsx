@@ -17,6 +17,8 @@ import {
   Modal,
   Linking,
   Animated,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { PlannerSettings, PTOPlan, DEFAULT_SETTINGS, CompanyHoliday } from './src/models/types';
 import { generatePlans } from './src/engine/solver';
@@ -59,6 +61,20 @@ export default function App() {
   };
 
   useEffect(() => { loadSettings(); }, []);
+
+  // Android back button handling
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (viewMode === 'results') {
+          setViewMode('input');
+          return true; // Prevent default back behavior
+        }
+        return false; // Allow default
+      });
+      return () => backHandler.remove();
+    }
+  }, [viewMode]);
 
   // Pulse animation for loading text
   useEffect(() => {
@@ -182,7 +198,10 @@ export default function App() {
   // --- Render ---
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar 
+        barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+        backgroundColor={Platform.OS === 'android' ? Colors.background : 'transparent'}
+      />
       <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
@@ -503,7 +522,13 @@ const CompanyHolidayModal: React.FC<{
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.background },
   container: { flex: 1 },
-  content: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
+  content: { 
+    padding: Spacing.lg, 
+    paddingBottom: Spacing.xxl,
+    maxWidth: 600, // Better readability on tablets/desktop
+    alignSelf: 'center',
+    width: '100%',
+  },
 
   // Header
   header: { marginBottom: Spacing.xl, paddingTop: Spacing.md },
